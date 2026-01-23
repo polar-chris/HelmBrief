@@ -1,0 +1,36 @@
+name: Build & Upload TestFlight
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Ruby (for fastlane)
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.2"
+
+      - name: Install gems
+        run: |
+          bundle install
+
+      - name: Build + Upload
+        env:
+          TEAMID: ${{ secrets.TEAMID }}
+          FASTLANE_ISSUER_ID: ${{ secrets.FASTLANE_ISSUER_ID }}
+          FASTLANE_KEY_ID: ${{ secrets.FASTLANE_KEY_ID }}
+          FASTLANE_KEY: ${{ secrets.FASTLANE_KEY }}
+          GH_PAT: ${{ secrets.GH_PAT }}
+          MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+          MATCH_GIT_URL: ${{ secrets.MATCH_GIT_URL }}
+          APP_IDENTIFIER: ${{ secrets.APP_IDENTIFIER }}
+          GITHUB_RUN_NUMBER: ${{ github.run_number }}
+        run: |
+          bundle exec fastlane ios beta
