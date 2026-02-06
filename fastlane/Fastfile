@@ -3,6 +3,8 @@ default_platform(:ios)
 platform :ios do
   desc "Build and upload to TestFlight"
   lane :beta do
+    # Install Tuist on the CI runner
+    sh("curl -Ls https://install.tuist.io | bash")
     # Generate Xcode project via Tuist
     sh("tuist generate --no-open")
 
